@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>缝隙生花 · 星空版</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Long+Cang&family=ZCOOL+XiaoWei&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --ease: cubic-bezier(.55,.06,.48,.99);
+  --font-main:'ZCOOL XiaoWei','Long Cang','Ma Shan Zheng','STKaiti','KaiTi',serif;
+  /* 主色取自图片中的流星与光带：青蓝、品紫、玫粉、暖白 */
+  --col-a:#8fd9ff; /* 淡青光 */
+  --col-b:#3fb3ff; /* 天蓝 */
+  --col-c:#6d70ff; /* 靛紫 */
+  --col-d:#b07bff; /* 淡紫 */
+  --col-e:#ff62c7; /* 玫粉 */
+  --col-f:#ffd9f7; /* 淡粉白 */
+  --glow-soft:0 0 2px rgba(255,255,255,.9),0 0 6px rgba(120,200,255,.75),0 0 14px rgba(120,140,255,.45),0 0 28px rgba(255,110,210,.25);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;}
+body{
+  display:flex;flex-direction:column;justify-content:center;align-items:center;
+  font-family:var(--font-main);
+  color:#fff;overflow:hidden;-webkit-font-smoothing:antialiased;
+  background:#000000; /* 先铺底色避免闪烁 */
+}
+/* 背景图层：使用你的 99.jpg，放同目录即可 */
+body::before{
+  content:"";position:fixed;inset:0;z-index:-2;
+  background:url('99.jpg') center/cover no-repeat;
+  filter:brightness(var(--bg-bright)) saturate(var(--bg-sat)) contrast(var(--bg-contrast));
+}
+/* 叠加一层渐变罩以增强对比，便于文字可读 */
+body::after{
+  content:"";position:fixed;inset:0;z-index:-1;
+  background:radial-gradient(circle at 55% 25%,rgba(30,50,90,.25),rgba(10,15,30,.65) 55%,rgba(5,8,15,.85) 85%),
+             linear-gradient(180deg,rgba(10,16,30,.35) 0%,rgba(5,8,15,.85) 70%);
+  pointer-events:none;
+}
+main{position:relative;padding:5rem 1.4rem 6rem;text-align:center;max-width:1200px;width:100%;}
+.line{display:block;position:relative;font-weight:400;line-height:1.22;margin:0 auto;}
+/* 第一行：楷体，青→粉→白柔性多段渐变，轻呼吸发光 */
+.line:first-of-type{
+  font-family:'STXingkai','HuaWenXingKai','华文行楷','STKaiTi','KaiTi','STKaiti','Kaiti SC',var(--font-main);
+  font-size:clamp(2rem,4.5vw + .6rem,5.3rem);
+  letter-spacing:.18em;
+  background:linear-gradient(100deg,var(--col-a) 0%,var(--col-b) 18%,var(--col-c) 38%,var(--col-d) 55%,var(--col-e) 72%,var(--col-f) 88%,#fff 100%);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+  text-shadow:var(--glow-soft);
+  animation:breath1 7s ease-in-out infinite, sheen 10s linear infinite;
+}
+/* 第二行：行书偏飘逸，逆向渐变并加强白点以对应流星交叉部分 */
+.line:nth-of-type(2){
+  margin-top:2.2rem;
+  font-family:'Long Cang','Ma Shan Zheng',var(--font-main);
+  font-size:clamp(2.6rem,5.3vw + 1rem,6rem);
+  letter-spacing:.12em;
+  background:linear-gradient(105deg,var(--col-f) 0%,var(--col-e) 15%,var(--col-d) 34%,var(--col-c) 56%,var(--col-b) 76%,var(--col-a) 90%); 
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+  text-shadow:0 0 2px rgba(255,255,255,.9),0 0 8px rgba(255,160,230,.55),0 0 18px rgba(120,150,255,.4);
+  animation:breath2 8s ease-in-out infinite, sheen 11s linear infinite reverse;
+}
+/* 渐隐上升（保留文字逐字出现，可去掉小花装饰） */
+#bloom span{background:inherit;-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:inherit;opacity:0;transform:translateY(18px) scale(.98);animation:rise .9s var(--ease) forwards;}
+#bloom span:nth-child(n){animation-delay:calc(.25s + (var(--i) * .12s));}
+
+/* 花瓣粒子保留（可根据需要注释掉）*/
+/* 扩展花瓣层到全屏并绝对居中，保证分布以视口中心为基准 */
+#petals{position:fixed;left:50%;top:0;transform:translateX(-50%);width:100vw;height:100vh;pointer-events:none;overflow:visible;}
+.petal{position:absolute;width:10px;height:10px;background:radial-gradient(circle at 35% 35%,#fff,var(--col-a) 35%,var(--col-e) 80%);border-radius:50% 50% 45% 55%/55% 45% 55% 45%;mix-blend-mode:screen;opacity:0;animation:float 11s linear infinite;filter:drop-shadow(0 0 4px rgba(255,210,255,.4));}
+
+footer{position:fixed;bottom:.7rem;width:100%;text-align:center;font-size:.65rem;font-family:'ZCOOL XiaoWei',serif;letter-spacing:.28em;color:rgba(210,225,255,.55);}
+footer span{transition:color .6s}footer span:hover{color:#fff}
+
+@keyframes float{0%{transform:translate3d(var(--x),0,0) rotate(0deg) scale(.4);opacity:0}5%{opacity:.9}70%{opacity:.9}100%{transform:translate3d(calc(var(--x) + var(--driftX)),-130vh,0) rotate(var(--rot)) scale(.8);opacity:0}}
+@keyframes rise{0%{opacity:0;filter:blur(3px);transform:translateY(26px) scale(.92);}55%{filter:blur(0);}100%{opacity:1;filter:blur(0);transform:translateY(0) scale(1);} }
+@keyframes sheen{0%{background-position:0% 50%}50%{background-position:120% 50%}100%{background-position:0% 50%}}
+@keyframes breath1{0%,100%{filter:drop-shadow(0 0 5px rgba(150,210,255,.7)) drop-shadow(0 0 22px rgba(255,140,230,.25));}50%{filter:drop-shadow(0 0 10px rgba(180,230,255,.9)) drop-shadow(0 0 30px rgba(255,160,240,.45));}}
+@keyframes breath2{0%,100%{filter:drop-shadow(0 0 5px rgba(255,170,230,.65)) drop-shadow(0 0 24px rgba(140,170,255,.3));}50%{filter:drop-shadow(0 0 10px rgba(255,190,240,.85)) drop-shadow(0 0 34px rgba(160,190,255,.45));}}
+
+@media (max-width:620px){
+  main{padding:4rem .9rem 5rem;}
+  .line:first-of-type{letter-spacing:.11em;font-size:clamp(1.9rem,9vw,3.5rem);} 
+  .line:nth-of-type(2){letter-spacing:.07em;font-size:clamp(2.2rem,10vw,4.05rem);} 
+  footer{font-size:.58rem;letter-spacing:.22em;}
+}
+</style>
+</head>
+<body>
+<main>
+  <div class="line"><span class="inner">不祝你完美无瑕</span></div>
+  <div class="line" id="bloom">我祝你缝隙生花</div>
+  <div id="petals" aria-hidden="true"></div>
+</main>
+<footer><span>愿每一处小小不完美，都长出温柔与花。</span></footer>
+<script>
+// 逐字出现（删除原小花 SVG，仅保留文字动画）
+const bloomLine=document.getElementById('bloom');
+(function decorate(){
+  const raw=bloomLine.textContent.trim();
+  bloomLine.textContent='';
+  [...raw].forEach((ch,i)=>{
+    const s=document.createElement('span');
+    s.textContent=ch; s.style.setProperty('--i',i);
+    bloomLine.appendChild(s);
+  });
+})();
+// 花瓣粒子（如不需要，可注释整个代码块）
+// 现在以整个视口中心为参考，使整体分布真正居中。startX = 0~100vw。
+const petalsContainer=document.getElementById('petals');
+function createPetal(init=false){
+  const p=document.createElement('div'); p.className='petal';
+  const startX=Math.random()*100; // 0~100 (vw)
+  const drift=Math.random()*40-20; // -20~20 (vw)
+  const rot=Math.random()*720-360;
+  p.style.setProperty('--x',startX+'vw');
+  p.style.setProperty('--driftX',drift+'vw');
+  p.style.setProperty('--rot',rot+'deg');
+  p.style.animationDelay=(init? (Math.random()*11).toFixed(2):0)+'s';
+  petalsContainer.appendChild(p);
+  setTimeout(()=>{p.remove();createPetal();},11000);
+}
+for(let i=0;i<32;i++)createPetal(true);
+</script>
+</body>
+</html>
